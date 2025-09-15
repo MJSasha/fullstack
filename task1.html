@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>2-колоночный резиновый сайт</title>
+  <meta name="description"
+        content="Типовой 2-колоночный резиновый сайт с шапкой, меню, основным контентом и боковой панелью"/>
+  <style>
+    /* Сброс и базовые стили */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.4;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: 150px auto 1fr 100px;
+      grid-template-columns: 100%;
+    }
+
+    header {
+      grid-row: 1 / 2;
+    }
+
+    nav {
+      grid-row: 2 / 3;
+    }
+
+    .container {
+      grid-row: 3 / 4;
+    }
+
+    footer {
+      grid-row: 4 / 5;
+    }
+
+    header {
+      height: 150px;
+      width: 100%;
+      background: linear-gradient(90deg, #4a90e2 0%, #357ABD 100%);
+      color: #fff;
+      display: block;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    header .logo svg {
+      width: 60px;
+      height: 60px;
+      margin-right: 1rem;
+      fill: #fff;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Меню: сверху под хедером, 100% ширины */
+    nav {
+      width: 100%;
+      background: #ffffff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      padding: 0.5rem 2rem;
+      font-weight: 600;
+    }
+
+    nav ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: inline-block;
+    }
+
+    nav li {
+      display: inline;
+      margin-right: 1.5rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #357ABD;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      color: #4a90e2;
+      outline: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 1rem auto 2rem;
+      padding: 0 1rem;
+      font-size: 0;
+    }
+
+    main.content {
+      display: inline-block;
+      vertical-align: top;
+      min-height: 400px;
+      width: calc(100% - 220px);
+      background: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 0 8px rgb(0 0 0 / 0.05);
+      font-size: 1rem; /* восстанавливаем */
+      border-radius: 4px;
+    }
+
+    aside.info {
+      display: inline-block;
+      vertical-align: top;
+      width: 200px;
+      min-height: 300px;
+      margin-left: 20px;
+      background: #eef4fb;
+      padding: 1rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    footer {
+      height: 100px;
+      width: 100%;
+      background: #357ABD;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: inset 0 1px 0 rgba(255 255 255 / 0.2);
+      user-select: none;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: #222;
+      background-color: #fff;
+      border: 2px solid #357ABD;
+      border-radius: 5px;
+      outline-offset: 2px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      /* отключаем дефолтное внутреннее тени и обводки */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 6px rgba(74, 144, 226, 0.6);
+      outline: none;
+    }
+
+    input[type="date"]::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    form.profile-form {
+      max-width: 600px;
+      margin-top: 0.5rem;
+    }
+
+    form.profile-form label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    form.profile-form input[type=text],
+    form.profile-form input[type=email],
+    form.profile-form input[type=password],
+    form.profile-form select {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    form.profile-form input[type=text]:focus,
+    form.profile-form input[type=email]:focus,
+    form.profile-form input[type=password]:focus,
+    form.profile-form select:focus {
+      border-color: #4a90e2;
+      outline: none;
+    }
+
+    form.profile-form button {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #4a90e2;
+      border: none;
+      border-radius: 3px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    form.profile-form button:hover,
+    form.profile-form button:focus {
+      background-color: #357ABD;
+      outline: none;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      /* Убираем боковую колонку, контент на всю ширину */
+      main.content,
+      aside.info {
+        display: block;
+        width: 100% !important;
+        margin-left: 0;
+        margin-top: 2rem;
+        min-height: auto;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+    }
+
+    /* Печать: печатаем только контент, на всю ширину */
+    @media print {
+      body > *:not(main.content) {
+        display: none !important;
+      }
+
+      main.content {
+        width: 100% !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-height: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo" role="banner">
+    <svg aria-hidden="true" viewBox="0 0 64 64" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="30" stroke="#fff" stroke-width="4" fill="#4a90e2"/>
+      <path fill="#fff" d="M20 44h24v4H20zM20 16h24v4H20zM28 24h8v16h-8z"/>
+    </svg>
+    <h1>Company Logo</h1>
+  </div>
+</header>
+
+<nav aria-label="Главное меню">
+  <ul>
+    <li><a href="#profile" tabindex="0">Профиль</a></li>
+    <li><a href="#settings">Настройки</a></li>
+    <li><a href="#messages">Сообщения</a></li>
+    <li><a href="#help">Помощь</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <main class="content" role="main" id="profile" tabindex="0">
+    <h2>Редактирование профиля пользователя 🧑‍💻</h2>
+    <form class="profile-form" method="post" action="#" novalidate>
+      <label for="fullname">ФИО</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Иван Иванович Иванов" required/>
+
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="example@mail.ru" required/>
+
+      <label for="phone">Телефон</label>
+      <input type="text" id="phone" name="phone" placeholder="+7 (999) 123-45-67"
+             pattern="^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$" title="Формат: +7 (999) 123-45-67"/>
+
+      <label for="birthdate">Дата рождения</label>
+      <input type="date" id="birthdate" name="birthdate" required/>
+
+
+      <label for="gender">Пол</label>
+      <select id="gender" name="gender" required>
+        <option value="" disabled selected>Выберите пол</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+        <option value="other">Другой</option>
+      </select>
+
+      <label for="password">Новый пароль</label>
+      <input type="password" id="password" name="password" placeholder="••••••••" minlength="6"/>
+
+      <label for="confirm-password">Подтверждение пароля</label>
+      <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" minlength="6"/>
+
+      <button type="submit">Сохранить изменения</button>
+    </form>
+  </main>
+
+  <aside class="info" aria-label="Дополнительная информация">
+    <h3>💡 Полезная информация</h3>
+    <p>Здесь вы можете обновить свои персональные данные и настройки. Пароль должен содержать минимум 6 символов.</p>
+    <p>Формат телефона: +7 (999) 123-45-67.</p>
+    <p>При печати страницы будет выведен только профиль для удобства.</p>
+  </aside>
+
+</div>
+
+<footer role="contentinfo">
+  © 2025 Company Name. Все права защищены Сашей Ушанковым.
+</footer>
+
+</body>
+</html>
