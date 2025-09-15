@@ -265,16 +265,30 @@
 
     /* Печать: печатаем только контент, на всю ширину */
     @media print {
-      body > *:not(main.content) {
+      header, nav, aside, footer {
         display: none !important;
       }
-
-      main.content {
+      .container {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
         width: 100% !important;
+        max-width: none !important;
+      }
+      main.content {
+        display: block !important;
+        width: 100% !important;
+        background: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        color: #000 !important;
         min-height: auto !important;
+      }
+      /* Фон всей страницы */
+      body {
+        background: #fff !important;
+        color: #000 !important;
       }
     }
   </style>
