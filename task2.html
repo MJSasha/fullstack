@@ -354,4 +354,51 @@
 </footer>
 
 </body>
+<script>
+  // 1. Отметка времени начала выполнения скрипта (можно считать началом загрузки,
+  // хотя более точное время дает performance.timing.navigationStart)
+  const scriptStartTime = Date.now();
+
+  // Функция для вывода результатов
+  function logPerformance(eventName, duration) {
+    console.log(`--- ${eventName} ---`);
+    console.log(`Продолжительность: ${duration.toFixed(2)} мс`);
+  }
+
+  // ===========================================
+  // Оценка времени DOMContentLoaded
+  // DOMContentLoaded: Загружен и проанализирован HTML-документ;
+  // стили и скрипты могут быть еще в процессе загрузки.
+  // ===========================================
+  document.addEventListener('DOMContentLoaded', () => {
+    const domContentLoadedTime = Date.now();
+    const duration = domContentLoadedTime - scriptStartTime;
+
+    logPerformance('DOMContentLoaded (Загрузка и парсинг документа)', duration);
+  });
+
+  // ===========================================
+  // Оценка времени Load
+  // load: Загружены все ресурсы страницы (HTML, CSS, изображения, скрипты и т.д.).
+  // Страница полностью готова к отображению.
+  // ===========================================
+  window.addEventListener('load', () => {
+    const loadTime = Date.now();
+    const duration = loadTime - scriptStartTime;
+
+    logPerformance('Load (Полная загрузка страницы и ресурсов)', duration);
+
+    // Дополнительно: Использование Performance API (более точно, но сложнее)
+    if (window.performance && window.performance.timing) {
+      const timing = window.performance.timing;
+
+      // Время от начала навигации до готовности DOM (DOMContentLoaded)
+      const domReadyDuration = timing.domContentLoadedEventEnd - timing.navigationStart;
+
+      console.log("--- Performance API (Точные данные браузера) ---");
+      console.log(`DOMContentLoaded (от навигации): ${domReadyDuration.toFixed(2)} мс`);
+    }
+  });
+
+</script>
 </html>

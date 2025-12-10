@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>AJAX-приложение для чтения JSON</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .programme {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .programme h3 {
+      margin-top: 0;
+      color: #cc5500;
+    }
+
+    #output {
+      margin-top: 20px;
+    }
+
+    #status {
+      font-weight: bold;
+      color: darkorange;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Программа передач (JSON)</h1>
+
+<div id="status"></div>
+
+<div id="output">
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // --- КОНФИГУРАЦИЯ ---
+    // Укажите имя файла, который нужно загрузить
+    const DATA_FILE = 'tv100.xml'; // ИЛИ 'tv100.xml'
+    const DATA_TYPE = (DATA_FILE.endsWith('.json')) ? 'json' : 'xml';
+    // -------------------
+
+    // Предполагаем, что HTML-структура осталась прежней
+    const outputDiv = document.getElementById('output');
+    const statusDiv = document.getElementById('status');
+
+    /**
+     * Основная функция для загрузки и обработки данных
+     * (Алгоритм AJAX-запроса совпадает с предыдущими задачами)
+     */
+    function loadData(url, type) {
+      const startTime = performance.now();
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url, true);
+
+      if (type === 'json') {
+        xhr.responseType = 'json';
+      } else {
+        xhr.responseType = 'document';
+      }
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          let processedData = [];
+          let rawData = (type === 'json') ? xhr.response : xhr.responseXML;
+
+          // 1. АЛГОРИТМ ОБРАБОТКИ ДАННЫХ (УНИФИКАЦИЯ)
+          try {
+            if (type === 'json') {
+              processedData = processJsonData(rawData);
+            } else if (type === 'xml') {
+              processedData = processXmlData(rawData);
+            }
+
+            // 2. АЛГОРИТМ ВЫВОДА ДАННЫХ
+            displayResults(processedData);
+
+          } catch (error) {
+            console.error("Processing Error:", error);
+            outputDiv.innerHTML = `<p style="color: red;">Ошибка обработки данных: ${error.message}</p>`;
+          }
+
+        } else {
+          outputDiv.innerHTML = `<p style="color: red;">Ошибка: HTTP-запрос не удался. Статус: ${xhr.status}</p>`;
+        }
+
+        // ВЫВОД ВРЕМЕНИ ОБРАБОТКИ
+        const endTime = performance.now();
+        const duration = (endTime - startTime).toFixed(2);
+        statusDiv.innerHTML = `✅ Данные (${DATA_TYPE.toUpperCase()}) обработаны и выведены за **${duration}** мс.`;
+      };
+
+      xhr.onerror = function () {
+        const endTime = performance.now();
+        const duration = (endTime - startTime).toFixed(2);
+        statusDiv.innerHTML = `❌ Запрос не удался. Время до ошибки: **${duration}** мс.`;
+        outputDiv.innerHTML = '<p style="color: red;">Ошибка сети: Не удалось выполнить запрос.</p>';
+      };
+
+      xhr.send();
+    }
+
+    /**
+     * Парсит JSON-данные (RSS-формат) и возвращает унифицированный массив объектов
+     */
+    function processJsonData(data) {
+      // Путь: rss.channel.item (должен быть массивом)
+      const items = data.rss && data.rss.channel && Array.isArray(data.rss.channel.item)
+        ? data.rss.channel.item
+        : [];
+
+      if (items.length === 0) {
+        throw new Error("JSON не содержит элементов 'item'.");
+      }
+
+      return items.map(item => ({
+        pubDate: item.pubDate,
+        title: item.title,
+        // Текст новости соответствует полю 'description'
+        description: item.description
+      }));
+    }
+
+    /**
+     * Парсит XML-данные (RSS-формат) и возвращает унифицированный массив объектов
+     */
+    function processXmlData(doc) {
+      // Элементы <item> находятся внутри <channel>
+      const items = doc.getElementsByTagName('item');
+      const results = [];
+
+      if (items.length === 0) {
+        throw new Error("XML не содержит элементов 'item'.");
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        // Получаем дочерние элементы
+        const titleElement = item.getElementsByTagName('title')[0];
+        const descriptionElement = item.getElementsByTagName('description')[0];
+        const pubDateElement = item.getElementsByTagName('pubDate')[0];
+
+        results.push({
+          pubDate: pubDateElement ? pubDateElement.textContent : 'N/A',
+          title: titleElement ? titleElement.textContent : 'N/A',
+          // Текст новости соответствует полю 'description'
+          description: descriptionElement ? descriptionElement.textContent : 'N/A'
+        });
+      }
+      return results;
+    }
+
+    /**
+     * Функция для форматирования даты (Wed, 10 Dec 2025 14:10:39 GMT -> 14:10)
+     */
+    function formatTime(dateString) {
+      if (!dateString) return 'Время не указано';
+      try {
+        // Создаем объект Date
+        const date = new Date(dateString);
+        // Получаем время в виде HH:MM (локальное время)
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      } catch (e) {
+        return 'Неверный формат даты';
+      }
+    }
+
+    /**
+     * Единая функция для вывода данных на экран (УНИФИКАЦИЯ ФОРМАТА ВЫВОДА)
+     */
+    function displayResults(dataArray) {
+      let htmlContent = '';
+
+      dataArray.forEach(item => {
+        const formattedTime = formatTime(item.pubDate);
+
+        // Используем pubDate (время) в заголовке, title как заголовок, description как текст новости.
+        htmlContent += `
+                <div class="programme">
+                    <h3>${formattedTime} - ${item.title || 'Заголовок не найден'}</h3>
+                    <p><strong>Текст новости:</strong> ${item.description || 'Текст не найден'}</p>
+                </div>
+            `;
+      });
+
+      outputDiv.innerHTML = htmlContent;
+    }
+
+    // Запуск приложения
+    loadData(DATA_FILE, DATA_TYPE);
+  });
+</script>
+
+</body>
+</html>

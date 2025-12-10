@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Рекурсивные контейнеры: flex vs inline-block</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 1rem;
+      background: #f0f0f0;
+    }
+
+    #container-root {
+      border: 2px solid #555;
+      padding: 0.5rem;
+      background: #fff;
+      min-height: 300px;
+    }
+
+    .flex .rec-container {
+      display: flex;
+    }
+
+    .inline .rec-container {
+      font-size: 0;
+    }
+
+    .inline .rec-container > .rec-container {
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    .rec-container {
+      border: 1px solid #0088cc;
+      background: #aaddffaa;
+      margin: 3px;
+      min-width: 80px;
+      min-height: 40px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #005577;
+      border-radius: 4px;
+    }
+
+    .rec-container > .rec-container {
+      flex: 1 1 50%;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Проверка рекурсивного дерева flex vs inline-block</h1>
+
+<div>
+  <label>
+    <input type="radio" name="mode" value="flex" checked/> Flex
+  </label>
+  <label>
+    <input type="radio" name="mode" value="inline"/> Inline-block
+  </label>
+  Глубина: <input id="depthInput" type="number" min="1" max="10" value="5" style="width:40px;"/>
+  <button id="buildBtn">Построить</button>
+</div>
+
+<div id="container-root" class="flex" style="margin-top:10px;"></div>
+
+<script>
+  const root = document.getElementById('container-root');
+  const depthInput = document.getElementById('depthInput');
+  const buildBtn = document.getElementById('buildBtn');
+  const modeRadios = document.querySelectorAll('input[name="mode"]');
+
+  function createContainers(depth, currentDepth = 1) {
+    if (depth < 1) return null;
+
+    const container = document.createElement('div');
+    container.className = 'rec-container';
+    container.textContent = 'Уровень ' + currentDepth;
+
+    if (currentDepth < depth) {
+      const leftChild = createContainers(depth, currentDepth + 1);
+      const rightChild = createContainers(depth, currentDepth + 1);
+      if (leftChild) container.appendChild(leftChild);
+      if (rightChild) container.appendChild(rightChild);
+    }
+
+    return container;
+  }
+
+  function getSelectedMode() {
+    for (const radio of modeRadios) {
+      if (radio.checked) {
+        return radio.value;
+      }
+    }
+    return 'flex';
+  }
+
+  buildBtn.addEventListener('click', () => {
+    const depth = Number(depthInput.value);
+    const mode = getSelectedMode();
+
+    root.className = mode; // установить класс flex или inline
+
+    root.innerHTML = ''; // очистить контейнер
+
+    const start = performance.now();
+    const tree = createContainers(depth);
+    if (tree) root.appendChild(tree);
+
+    // ждем следующего кадра, чтобы браузер отрисовал изменения
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const end = performance.now();
+        alert(`Дерево построено глубиной ${depth} с режимом "${mode}" за ${(end - start).toFixed(2)} мс`);
+      });
+    });
+  });
+
+  // При загрузке сразу построим с выбранными параметрами
+  window.addEventListener('load', () => buildBtn.click());
+</script>
+
+</body>
+</html>

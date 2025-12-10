@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>XML в JSON Конвертер</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      display: flex;
+      width: 80%;
+      max-width: 1200px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      resize: none;
+      font-family: monospace;
+      font-size: 14px;
+      background-color: #fff;
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h3 {
+      color: #333;
+      margin-top: 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #time-result {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #d9534f;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+<h2>XML в JSON Конвертер и Оценка Скорости</h2>
+
+<div class="container">
+  <div class="panel">
+    <h3>XML Ввод:</h3>
+    <textarea id="xmlInput" placeholder="Вставьте ваш XML сюда..."></textarea>
+  </div>
+  <div class="panel">
+    <h3>JSON Вывод:</h3>
+    <textarea id="jsonOutput" placeholder="Здесь появится JSON-результат..." readonly></textarea>
+  </div>
+</div>
+
+<button id="convertButton">КОНВЕРТИРОВАТЬ</button>
+<div id="time-result"></div>
+
+<footer>
+  <p>Для замера скорости используйте предоставленные XML-данные и повторите конвертацию 5-10 раз для получения среднего
+    значения.</p>
+</footer>
+
+<script>
+  // --- ГЛАВНАЯ РЕКУРСИВНАЯ ФУНКЦИЯ КОНВЕРТАЦИИ ---
+
+  /**
+   * Рекурсивно преобразует XML DOM-узел в JSON-объект.
+   * Атрибуты преобразуются в свойства с префиксом '@'.
+   * Текстовое содержимое узла сохраняется в свойстве '#text'.
+   * Повторяющиеся дочерние узлы преобразуются в массивы.
+   */
+  function xmlToJson(xmlNode) {
+    // 1. Обработка текстовых узлов
+    if (xmlNode.nodeType === 3 /* Node.TEXT_NODE */) {
+      // Убираем лишние пробелы и пустые строки
+      const text = xmlNode.nodeValue.trim();
+      return text.length > 0 ? text : null;
+    }
+
+    // 2. Обработка узлов-элементов
+    if (xmlNode.nodeType === 1 /* Node.ELEMENT_NODE */) {
+      const obj = {};
+
+      // 2.1. Обработка атрибутов
+      if (xmlNode.attributes.length > 0) {
+        obj['@attributes'] = {};
+        for (let i = 0; i < xmlNode.attributes.length; i++) {
+          const attribute = xmlNode.attributes[i];
+          obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+        }
+      }
+
+      // 2.2. Обработка дочерних узлов
+      const children = xmlNode.childNodes;
+      if (children.length > 0) {
+        for (let i = 0; i < children.length; i++) {
+          const child = children.item(i);
+          const childNodeName = child.nodeName;
+
+          const convertedChild = xmlToJson(child);
+
+          if (convertedChild !== null) {
+            if (child.nodeType === 3) {
+              // Текстовое содержимое (предыдущий if не был null)
+              obj['#text'] = convertedChild;
+            } else if (child.nodeType === 1) {
+              // Дочерний элемент
+              if (obj[childNodeName] === undefined) {
+                // Если свойство еще не существует, просто добавляем его
+                obj[childNodeName] = convertedChild;
+              } else {
+                // Если свойство уже есть, преобразуем его в массив
+                if (!Array.isArray(obj[childNodeName])) {
+                  obj[childNodeName] = [obj[childNodeName]];
+                }
+                obj[childNodeName].push(convertedChild);
+              }
+            }
+          }
+        }
+      }
+
+      // Если элемент содержит только один текстовый узел и не имеет атрибутов/других элементов,
+      // то возвращаем просто текст (упрощаем структуру)
+      if (children.length === 1 && children.item(0).nodeType === 3 && Object.keys(obj).length === 0) {
+        return children.item(0).nodeValue.trim();
+      }
+
+      return obj;
+    }
+
+    return null;
+  }
+
+  // --- ЛОГИКА ИНТЕРФЕЙСА И ЗАМЕР ВРЕМЕНИ ---
+
+  document.getElementById('convertButton').addEventListener('click', () => {
+    const xmlInput = document.getElementById('xmlInput').value;
+    const jsonOutput = document.getElementById('jsonOutput');
+    const timeResult = document.getElementById('time-result');
+
+    jsonOutput.value = '';
+    timeResult.textContent = '';
+
+    if (!xmlInput.trim()) {
+      alert('Пожалуйста, введите XML-данные.');
+      return;
+    }
+
+    try {
+      // 1. Начало замера времени
+      const startTime = performance.now();
+
+      // 2. Парсинг XML-строки в DOM-дерево
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlInput, "text/xml");
+
+      // Проверка на ошибки парсинга XML
+      const errorNode = xmlDoc.getElementsByTagName('parsererror');
+      if (errorNode.length > 0) {
+        throw new Error('Ошибка парсинга XML: ' + errorNode[0].textContent);
+      }
+
+      // 3. Конвертация DOM-дерева в JSON-объект
+      // Берем корневой элемент xmlDoc.documentElement
+      const jsonObj = {};
+      jsonObj[xmlDoc.documentElement.nodeName] = xmlToJson(xmlDoc.documentElement);
+
+      // 4. Преобразование JSON-объекта в строку с форматированием
+      const jsonString = JSON.stringify(jsonObj, null, 2);
+
+      // 5. Конец замера времени
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+
+      // 6. Вывод результатов
+      jsonOutput.value = jsonString;
+      timeResult.textContent = `Время конвертации: ${executionTime.toFixed(4)} мс`;
+
+    } catch (error) {
+      jsonOutput.value = `Ошибка конвертации: ${error.message}`;
+      timeResult.textContent = '';
+      console.error(error);
+    }
+  });
+
+  document.getElementById('xmlInput').value = `
+<library name="City Library" location="Central">
+  <book id="1" format="paperback">
+    <title>1984</title>
+    <author>George Orwell</author>
+    <year>1949</year>
+    <genre>Dystopian Fiction</genre>
+    <loan>
+        <borrower>Alex</borrower>
+        <due_date>2025-01-15</due_date>
+    </loan>
+  </book>
+  <book id="2" format="hardcover">
+    <title>Brave New World</title>
+    <author>Aldous Huxley</author>
+    <year>1932</year>
+    <genre>Science Fiction</genre>
+  </book>
+  <book id="3" format="paperback">
+    <title>Fahrenheit 451</title>
+    <author>Ray Bradbury</author>
+    <year>1953</year>
+    <genre>Dystopian Fiction</genre>
+  </book>
+  <book id="4" format="ebook">
+    <title>The Hitchhiker's Guide to the Galaxy</title>
+    <author>Douglas Adams</author>
+    <year>1979</year>
+    <genre>Comedy Science Fiction</genre>
+  </book>
+  <book id="5" format="hardcover">
+    <title>Dune</title>
+    <author>Frank Herbert</author>
+    <year>1965</year>
+    <genre>Science Fiction</genre>
+    <loan>
+        <borrower>Sam</borrower>
+        <due_date>2025-02-01</due_date>
+    </loan>
+  </book>
+</library>
+`.trim();
+</script>
+</body>
+</html>
