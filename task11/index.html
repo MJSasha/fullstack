@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html ⚡ lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coeluso - Free PSD Template</title>
-  <style>
+  <title>Coeluso - Free PSD Template (AMP)</title>
+
+  <link rel="canonical" href="https://your-domain.com/original-coeluso.html">
+
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+  <style amp-custom>
     :root {
       --primary-color: #001a33;
       --secondary-color: #00264d;
@@ -44,16 +51,16 @@
     .container.for-logo {
       width: 100%;
       display: flex;
-      align-items: start;
+      align-items: flex-start; /* Изменено start на flex-start */
     }
 
     .logo {
       display: flex;
-      align-items: start;
+      align-items: flex-start; /* Изменено start на flex-start */
       gap: 10px;
     }
 
-    .logo img {
+    .logo amp-img {
       width: 40px;
       height: 40px;
     }
@@ -69,13 +76,7 @@
       cursor: pointer;
     }
 
-    .menu-toggle span {
-      width: 25px;
-      height: 3px;
-      background-color: var(--text-color);
-      margin: 3px;
-      transition: 0.3s;
-    }
+    /* .menu-toggle span (удален, так как анимация и JS запрещены) */
 
     /* Hero Section */
     .hero {
@@ -105,7 +106,7 @@
       border-radius: 30px;
       text-decoration: none;
       font-weight: 600;
-      transition: all 0.3s ease;
+      transition: all 0.3s ease; /* Transition будет проигнорирован, но оставлен для "чистоты" */
     }
 
     .btn:hover {
@@ -132,9 +133,7 @@
       position: relative;
     }
 
-    .app-screen img {
-      width: 100%;
-      height: 100%;
+    .app-screen amp-img {
       object-fit: cover;
     }
 
@@ -150,9 +149,11 @@
 
     .headphones-image {
       flex: 0 0 400px;
+      /* Добавлено ограничение ширины для amp-img */
+      max-width: 400px;
     }
 
-    .headphones-image img {
+    .headphones-image amp-img {
       width: 100%;
       height: auto;
     }
@@ -196,17 +197,23 @@
       padding: 30px;
       background: rgba(0, 26, 51, 0.5);
       border-radius: 15px;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease; /* Будет проигнорирован */
     }
 
     .feature-item:hover {
-      transform: translateY(-10px);
+      transform: translateY(-10px); /* Будет проигнорирован */
     }
 
     .feature-icon {
       font-size: 40px;
       color: var(--accent-color);
       margin-bottom: 20px;
+    }
+
+    .feature-item amp-img.feature-icon {
+      width: 40px;
+      height: 40px;
+      display: block;
     }
 
     .feature-item h3 {
@@ -225,7 +232,7 @@
       align-items: center;
     }
 
-    .phone-center img {
+    .phone-center amp-img {
       width: 100%;
       max-width: 250px;
       height: auto;
@@ -265,7 +272,7 @@
       min-height: 400px;
     }
 
-    .mobile-screens-images img {
+    .mobile-screens-images amp-img {
       position: absolute;
       width: 250px;
       height: auto;
@@ -273,16 +280,21 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
+    /* Для amp-img необходимо указать размеры */
     .screen-1 {
       top: 0;
       right: 0;
       transform: rotate(-15deg);
+      width: 250px;
+      height: 500px; /* Предположительная высота, для responsive layout */
     }
 
     .screen-2 {
       top: 100px;
       right: 100px;
       transform: rotate(-10deg);
+      width: 250px;
+      height: 500px; /* Предположительная высота */
     }
 
     /* Testimonial Section */
@@ -297,12 +309,6 @@
       max-width: 800px;
       margin: 0 auto 40px;
       color: var(--light-text);
-    }
-
-    .author-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
 
     /* Footer */
@@ -335,7 +341,7 @@
       color: var(--light-text);
     }
 
-    /* Audio Wave Background */
+    /* Audio Wave Background - CSS-анимация @keyframes wave удалена */
     .audio-wave {
       position: absolute;
       top: 0;
@@ -350,19 +356,11 @@
       top: 300px;
       width: 100%;
       height: 100%;
-      background-image: url('../task11/svg/waves.svg');
+      /* Замена background-image на amp-img с layout="fixed" для AMP */
+      /* background-image: url('svg/waves.svg'); - Заменено на amp-img в body */
       background-repeat: repeat;
       background-size: cover;
-      animation: wave 10s linear infinite;
-    }
-
-    @keyframes wave {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: 1000px 0;
-      }
+      /* animation: wave 10s linear infinite; - Удалено, так как JS/анимации запрещены */
     }
 
     /* Responsive Design */
@@ -386,6 +384,11 @@
 
       .headphones-image {
         flex: 0 0 300px;
+        max-width: 300px; /* Обновлено */
+      }
+
+      .features-grid {
+        justify-content: space-around; /* Для лучшего размещения */
       }
 
       .features h2 {
@@ -409,36 +412,37 @@
         top: 0;
         right: 0;
         transform: rotate(-10deg);
+        width: 200px; /* Обновлено для мобильных */
+        height: 400px; /* Обновлено для мобильных */
       }
 
       .screen-2 {
         top: 80px;
         right: 50px;
         transform: rotate(-5deg);
+        width: 200px; /* Обновлено для мобильных */
+        height: 400px; /* Обновлено для мобильных */
       }
     }
   </style>
 </head>
 <body>
-<!-- Audio Wave Background -->
 <div class="audio-wave">
   <div class="wave"></div>
 </div>
 
-<!-- Header -->
 <header>
   <div class="container for-logo">
     <div class="logo">
-      <img src="../task11/svg/logo.svg" alt="Coeluso Logo">
+      <amp-img src="svg/logo.svg" alt="Coeluso Logo" width="40" height="40" layout="fixed"></amp-img>
       <h1>Coeluso</h1>
     </div>
     <div class="menu-toggle">
-      <img src="../task11/svg/hamburget.svg" alt="Menu">
+      <amp-img src="svg/hamburget.svg" alt="Menu" width="25" height="25" layout="fixed"></amp-img>
     </div>
   </div>
 </header>
 
-<!-- Hero Section -->
 <section class="hero">
   <div class="container">
     <h2>Coeluso is free PSD template</h2>
@@ -447,31 +451,22 @@
 
     <div class="app-screens">
       <div class="app-screen">
-        <img
-          src="../task11/img/card-1.png"
-          alt="App Screen 1">
+        <amp-img src="img/card-1.png" alt="App Screen 1" width="250" height="500" layout="responsive"></amp-img>
       </div>
       <div class="app-screen">
-        <img
-          src="../task11/img/card-2.png"
-          alt="App Screen 2">
+        <amp-img src="img/card-2.png" alt="App Screen 2" width="250" height="500" layout="responsive"></amp-img>
       </div>
       <div class="app-screen">
-        <img
-          src="../task11/img/card-3.png"
-          alt="App Screen 3">
+        <amp-img src="img/card-3.png" alt="App Screen 3" width="250" height="500" layout="responsive"></amp-img>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Headphones Section -->
 <section class="headphones-section">
   <div class="container">
     <div class="headphones-image">
-      <img
-        src="../task11/img/headphones.png"
-        alt="Headphones">
+      <amp-img src="img/headphones.png" alt="Headphones" width="400" height="400" layout="responsive"></amp-img>
     </div>
     <div class="headphones-content">
       <h2>Coeluso is free PSD template</h2>
@@ -483,41 +478,38 @@
   </div>
 </section>
 
-<!-- Features Section -->
 <section class="features">
   <div class="container">
     <h2>Coeluso with a lot of features</h2>
 
     <div class="features-grid">
       <div class="feature-item">
-        <img src="../task11/svg/speaker.svg" alt="speaker" class="feature-icon"/>
+        <amp-img src="svg/speaker.svg" alt="speaker" class="feature-icon" width="40" height="40" layout="fixed"></amp-img>
         <h3>Lorem ipsum dolor sit amet</h3>
         <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra
           elit non lorem elementum iaculis.</p>
       </div>
 
       <div class="phone-center">
-        <img
-          src="../task11/img/phone.png"
-          alt="Phone Screen">
+        <amp-img src="img/phone.png" alt="Phone Screen" width="250" height="500" layout="responsive"></amp-img>
       </div>
 
       <div class="feature-item">
-        <img src="../task11/svg/headphones.svg" alt="headphones" class="feature-icon"/>
+        <amp-img src="svg/headphones.svg" alt="headphones" class="feature-icon" width="40" height="40" layout="fixed"></amp-img>
         <h3>Lorem ipsum dolor sit amet</h3>
         <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra
           elit non lorem elementum iaculis.</p>
       </div>
 
       <div class="feature-item">
-        <img src="../task11/svg/activity.svg" alt="activity" class="feature-icon"/>
+        <amp-img src="svg/activity.svg" alt="activity" class="feature-icon" width="40" height="40" layout="fixed"></amp-img>
         <h3>Lorem ipsum dolor sit amet</h3>
         <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra
           elit non lorem elementum iaculis.</p>
       </div>
 
       <div class="feature-item">
-        <img src="../task11/svg/cd.svg" alt="cd" class="feature-icon"/>
+        <amp-img src="svg/cd.svg" alt="cd" class="feature-icon" width="40" height="40" layout="fixed"></amp-img>
         <h3>Lorem ipsum dolor sit amet</h3>
         <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra
           elit non lorem elementum iaculis.</p>
@@ -526,12 +518,11 @@
   </div>
 </section>
 
-<!-- Mobile Screens Section -->
 <section class="mobile-screens">
   <div class="container">
     <div class="mobile-screens-content">
       <div class="mobile-screens-text">
-        <img src="../task11/svg/power.svg" alt="power" class="feature-icon"/>
+        <amp-img src="svg/power.svg" alt="power" class="feature-icon" width="40" height="40" layout="fixed"></amp-img>
         <h2>Lorem ipsum dolor sit amet</h2>
         <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra
           elit non lorem elementum iaculis. Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis
@@ -539,21 +530,13 @@
       </div>
 
       <div class="mobile-screens-images">
-        <img
-          src="../task11/img/card-1.png"
-          alt="Mobile Screen 1" class="screen-1">
-        <img
-          src="../task11/img/card-3.png"
-          alt="Mobile Screen 2" class="screen-2">
-        <!--        <img-->
-        <!--          src="img/card-3.png"-->
-        <!--          alt="Mobile Screen 3" class="screen-3">-->
+        <amp-img src="img/card-1.png" alt="Mobile Screen 1" class="screen-1" width="250" height="500" layout="absolute"></amp-img>
+        <amp-img src="img/card-3.png" alt="Mobile Screen 2" class="screen-2" width="250" height="500" layout="absolute"></amp-img>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Testimonial Section -->
 <section class="testimonial">
   <div class="container">
     <p>Consectetur adipiscing elit. Ut fermentum condimentum massa, in sagittis dolor feugiat id. Morbi pharetra elit
@@ -561,7 +544,6 @@
   </div>
 </section>
 
-<!-- Footer -->
 <footer>
   <div class="container">
     <div class="footer-links">
